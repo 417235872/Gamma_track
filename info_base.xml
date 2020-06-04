@@ -1,0 +1,15 @@
+<mainTrack>
+    <name />
+    <index />
+    <note />
+    <auxiliary>
+        <declination />
+        <intensity />
+    </auxiliary>
+    <design>
+        <targetOrientation />
+        <dipAngle />
+        <orientation />
+    </design>
+    <branch />
+</mainTrack>

@@ -1,0 +1,33 @@
+<mainTrack>
+    <name>track1</name>
+    <index>track1</index>
+    <note></note>
+    <auxiliary>
+        <declination>90</declination>
+        <intensity>43.4</intensity>
+    </auxiliary>
+    <design>
+        <targetOrientation>90</targetOrientation>
+        <dipAngle>5</dipAngle>
+        <orientation>6</orientation>
+    </design>
+    <branch>
+        <track>
+        	<name>track2</name>
+            <index>track1/track2</index>
+            <note />
+            <branch>
+                <track>
+                    <name>track1-1-1</name>
+                    <index>track1/track2/track1-1-1</index>
+                    <note />
+                </track>
+            </branch>
+        </track>
+        <track>
+            <name>tack1-2</name>
+            <index>track1/track1-2</index>
+            <note></note>
+        </track>
+    </branch>
+</mainTrack>

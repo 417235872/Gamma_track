@@ -1,0 +1,15 @@
+<mainTrack>
+    <name>RootTrack</name>
+    <index>RootTrack</index>
+    <note />
+    <auxiliary>
+        <declination>0</declination>
+        <intensity>0</intensity>
+    </auxiliary>
+    <design>
+        <targetOrientation>0</targetOrientation>
+        <dipAngle>0</dipAngle>
+        <orientation>0</orientation>
+    </design>
+    <branch />
+</mainTrack>
