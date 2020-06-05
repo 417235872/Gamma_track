@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>792</width>
-    <height>662</height>
+    <width>1209</width>
+    <height>808</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -24,11 +24,63 @@
        <attribute name="title">
         <string>测斜轨迹</string>
        </attribute>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="myGLWidget_withGride" name="threeDwidget">
+          <property name="minimumSize">
+           <size>
+            <width>500</width>
+            <height>400</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="myPlotWidget_y" name="widget_y" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>250</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="myPlotWidget_x" name="widget_x" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>200</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QWidget" name="widget_pos" native="true"/>
+        </item>
+       </layout>
       </widget>
       <widget class="QWidget" name="tab_tabel">
        <attribute name="title">
         <string>测斜数据</string>
        </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QTableWidget" name="tableWidget"/>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -39,7 +91,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>792</width>
+     <width>1209</width>
      <height>26</height>
     </rect>
    </property>
@@ -52,10 +104,11 @@
     <property name="title">
      <string>文件</string>
     </property>
-    <addaction name="action_2"/>
-    <addaction name="action"/>
-    <addaction name="action_3"/>
+    <addaction name="action_menu_newProject"/>
+    <addaction name="action_menu_openProjiect"/>
+    <addaction name="action_menu_recentProject"/>
     <addaction name="separator"/>
+    <addaction name="action_menu_export"/>
    </widget>
    <widget class="QMenu" name="menu_3">
     <property name="title">
@@ -67,45 +120,19 @@
    <addaction name="menu3D"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="dockWidget_2">
+  <widget class="QDockWidget" name="dockWidget_trackTree">
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QGroupBox" name="groupBox">
-       <property name="title">
-        <string>GroupBox</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QTreeView" name="treeView"/>
-        </item>
-       </layout>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
-  <widget class="QDockWidget" name="dockWidget_3">
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="QWidget" name="dockWidgetContents_3">
-    <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QGroupBox" name="groupBox_2">
-       <property name="title">
-        <string>GroupBox</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="groupBox_3">
-       <property name="title">
-        <string>GroupBox</string>
-       </property>
+      <widget class="trackTree" name="treeWidget">
+       <column>
+        <property name="text">
+         <string notr="true">track tree</string>
+        </property>
+       </column>
       </widget>
      </item>
     </layout>
@@ -121,25 +148,81 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="action_tool_chooseMainTrack"/>
+   <addaction name="action_tool_linkPort"/>
+   <addaction name="action_tool_start"/>
+   <addaction name="action_tool_correctToolFace"/>
+   <addaction name="action_tool_changeToolFace"/>
   </widget>
-  <action name="action">
+  <widget class="QDockWidget" name="dockWidget_toolBox">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QToolBox" name="toolBox">
+       <property name="currentIndex">
+        <number>1</number>
+       </property>
+       <widget class="QWidget" name="page">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>256</width>
+          <height>216</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Page 1</string>
+        </attribute>
+       </widget>
+       <widget class="QWidget" name="page_2">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>256</width>
+          <height>216</height>
+         </rect>
+        </property>
+        <attribute name="label">
+         <string>Page 2</string>
+        </attribute>
+       </widget>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="action_menu_openProjiect">
    <property name="text">
-    <string>打开项目</string>
+    <string>打开钻场</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
    </property>
   </action>
-  <action name="action_2">
+  <action name="action_menu_newProject">
    <property name="text">
-    <string>新建项目</string>
+    <string>新建钻场</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
-  <action name="action_3">
+  <action name="action_menu_recentProject">
    <property name="text">
-    <string>最近打开的项目</string>
+    <string>最近打开的钻场</string>
    </property>
   </action>
-  <action name="action_5">
+  <action name="action_tool_start">
    <property name="text">
     <string>开始测量</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+S</string>
    </property>
   </action>
   <action name="action_6">
@@ -147,7 +230,65 @@
     <string>停止测量</string>
    </property>
   </action>
+  <action name="action_tool_chooseMainTrack">
+   <property name="text">
+    <string>选择主孔</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+C</string>
+   </property>
+  </action>
+  <action name="action_tool_linkPort">
+   <property name="text">
+    <string>端口连接</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Alt+P</string>
+   </property>
+  </action>
+  <action name="action_menu_export">
+   <property name="text">
+    <string>导出</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+E</string>
+   </property>
+  </action>
+  <action name="action_tool_correctToolFace">
+   <property name="text">
+    <string>修正工具面</string>
+   </property>
+  </action>
+  <action name="action_tool_changeToolFace">
+   <property name="text">
+    <string>调整工具面</string>
+   </property>
+  </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>trackTree</class>
+   <extends>QTreeWidget</extends>
+   <header>myWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>myGLWidget_withGride</class>
+   <extends>QOpenGLWidget</extends>
+   <header>myWidget</header>
+  </customwidget>
+  <customwidget>
+   <class>myPlotWidget_y</class>
+   <extends>QWidget</extends>
+   <header>myWidget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>myPlotWidget_x</class>
+   <extends>QWidget</extends>
+   <header>myWidget</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

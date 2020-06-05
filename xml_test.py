@@ -1,13 +1,22 @@
 import xml.etree.ElementTree as ET
-trackXML = ET.parse('info_base.xml')
+trackXML = ET.parse('info.xml')
 trackRoot = trackXML.getroot()
-print(trackRoot.find('./branch').tag)
-for i in trackXML.iter():
-    j = i.find('path')
-    print(j)
-d = {"a":1,'b':2}
-for key in d:
-    print(key)
+
+deep = 0
+def _branchInit(track: ET.Element):
+    global deep
+    print("-"*deep,track.find('./name').text)
+    branch = track.find('./branch').findall('track')
+    deep += 1
+    if branch is None:
+        deep += -1
+        return True
+    else:
+        for i in branch:
+            _branchInit(i)
+        deep += -1
+        return True
+_branchInit(trackRoot)
 
 #     j = i.find("name")
 #     if j is not None:

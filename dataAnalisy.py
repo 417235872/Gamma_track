@@ -20,9 +20,17 @@ dataHead = (
     "电池电压，V",
     "校验和",
     "磁场强度，μT",
-    "温度，℃","测量时间",
+    "温度，℃",
+    "测量时间",
     "测量日期"
-               )
+)
+designHead = (
+    "孔深，m",
+    "设计倾角，°",
+    "设计方位，°",
+    "顶板相对标高，m",
+    "底板相对标高，m"
+)
 #自动搜索并返还可用端口的名称，若无可用的端口，将提示端口不存在或端口被占用
 def search_available_port():
     plist = list(sl.comports())
@@ -132,32 +140,46 @@ import xml.etree.ElementTree as ET
 存储方案：
 孔的分支信息存储在info.xml中；
 数据存储在data.xlsx中，各个孔的数据放在不同的sheet中。
+设计数据存储在design.xlsx中，对应各个孔的设计方案放在不同的Sheet中。
 读取方案：
 孔分支信息的info.xml读取为xml.etre.ElementTree。
-数据根据孔分支信息载入孔路径（str）来从Excel文件中的对应sheet中载入数据。
+数据根据孔分支信息载入孔索引（str）来从Excel文件中的对应sheet中载入数据。
+设计数据根据对应孔分支的索引来从Excel文件中的对应sheet中载入数据。
+可能会对于某些孔的分支没有对应的设计数据。
 ===============主要参数============
 path    track文件夹的位置
 dataPath    track数据（Excel）的位置
-infoPath    track分支信息（xml）位置
+infoPath    track分支信息（xml）的位置
+designPath  track设计信息（Excel）的位置
 tree    以etree形式读取track分支信息（xml）
-dataDic 以字典形式存储各分支的DataFrame，key为tree中的path信息
-writer  pd.ExcelWriter(self.dataPath),用于DataFrame分sheet存储在Excel中
+dataDic 以字典形式存储各分支的DataFrame，key为tree中的index信息
+designDic 以字典形式存储各分支的DataFrame，key为tree中的index信息
+dataWriter  pd.ExcelWriter(self.dataPath),用于DataFrame分sheet存储在Excel中
+designWriter pd.ExcelWriter(self.designPath),用于DataFrame分sheet存储在Excel中
 '''
 class track(QObject):
     def __init__(self):
         super(track, self).__init__()
+        #各文件路径
         self.path = None
         self.dataPath = None
         self.infoPath = None
+        self.designPath = None
+        #数据存储
         self.tree = None
         self.dataDic = {}
-        self.writer = None
+        self.designDic = {}
+        #数据写入
+        self.dataWriter = None
+        self.designWriter = None
 
     #清除tree，writer和dataDic
     def clear(self):
         self.tree = None
         self.dataDic = {}
-        self.writer = None
+        self.designDic = {}
+        self.dataWriter = None
+        self.designWriter = None
 
     #从目标路径中载入track
     def loadData(self,path : str):
@@ -167,22 +189,29 @@ class track(QObject):
         self.path = path
         self.infoPath = os.path.join(path,"info.xml")
         self.dataPath = os.path.join(path,"data.xlsx")
-        self.writer = pd.ExcelWriter(self.dataPath)
+        self.designPath = os.path.join(path,"design.xlsx")
+        self.dataWriter = pd.ExcelWriter(self.dataPath)
+        self.designWriter = pd.ExcelWriter(self.designPath)
         self.tree = ET.parse(self.infoPath)
         #load DataFrame from disk to memory.
-        reader = pd.ExcelFile(self.dataPath)
+        dataReader = pd.ExcelFile(self.dataPath)
+        designReader = pd.ExcelFile(self.designPath)
         for i in self.tree.iter():
             j = i.find('index')
             if j is not None:
-                self.dataDic[j.text] = reader.parse(sheet_name=j.text).set_index(dataHead[0])
-        reader.close()
+                self.dataDic[j.text] = dataReader.parse(sheet_name=j.text).set_index(dataHead[0])
+                self.designDic[j.text] = designReader.parse(sheet_name=j.text).set_index(designHead[0])
+        dataReader.close()
+        designReader.close()
 
     #向目标路径中创建一个以那么参数为名的track，同时当前track转换到这个新的track
     #可以接收新track的的一些设计参数和辅助参数
     def creatRootTrack(self,path : str,name : str,**kwargs):
         global dataHead
+        global designHead
         #create new data and infomation of track
         dataBase = pd.DataFrame(columns=dataHead).set_index(dataHead[0])
+        designBase = pd.DataFrame(columns=designHead).set_index(designHead[0])
         with open("info_base.xml",'r') as file:
             infoText = file.read()
         baseTrack = ET.fromstring(infoText)
@@ -198,9 +227,12 @@ class track(QObject):
         self.path = os.path.join(path,name)
         self.infoPath = os.path.join(self.path,'info.xml')
         self.dataPath = os.path.join(self.path,"data.xlsx")
+        self.designPath = os.path.join(self.path,"design.xlsx")
         self.tree = ET.ElementTree(element=baseTrack)
-        self.writer = pd.ExcelWriter(self.dataPath)
+        self.dataWriter = pd.ExcelWriter(self.dataPath)
+        self.designWriter = pd.ExcelWriter(self.designPath)
         self.dataDic[kwargs.get("name","RootTrack")] = dataBase
+        self.designDic[kwargs.get("name","RootTrack")] = designBase
         #save them
         os.mkdir(self.path)
         self.saveall()
@@ -209,8 +241,11 @@ class track(QObject):
     def saveall(self):
         self.tree.write(self.infoPath)
         for key in self.dataDic:
-            self.dataDic[key].to_excel(excel_writer=self.writer, sheet_name=key)
-        self.writer.save()
+            self.dataDic[key].to_excel(excel_writer=self.dataWriter, sheet_name=key)
+        self.dataWriter.save()
+        for key in self.designDic:
+            self.designDic[key].to_excel(excel_writer=self.designWriter, sheet_name=key)
+        self.designWriter.save()
 
     #在trackParent下创建一个名为trackName新的分支track
     #将会在etree中添加track节点，同时向dataDic中添加一个新的数据表
@@ -225,6 +260,8 @@ class track(QObject):
         index.text = trackParent.find('path').text + "/" + trackName
         dataBase = pd.DataFrame(columns=dataHead).set_index(dataHead[0])
         self.dataDic[index.text] = dataBase
+        designBase = pd.DataFrame(columns=designHead).set_index(designHead[0])
+        self.designDic[index.text] = designBase
         return track
 
     #删除trackParent下的分支track
@@ -234,12 +271,13 @@ class track(QObject):
             index = i.find("index")
             if index is not None:
                 self.dataDic.pop(index.text)
+                self.designDic.pop((index.text))
         trackParent.remove(track)
 
 
 if __name__ == '__main__':
     track = track()
-    track.loadData('test\\trackRoot')
+    track.loadData('test//mytrack')
     print(track.dataDic['RootTrack'].index)
 
 

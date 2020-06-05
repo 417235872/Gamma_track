@@ -130,7 +130,8 @@ class clockForm(QWidget):
 
 if __name__ == "__main__":
     import sys
-
+    import pyqtgraph.examples
+    pyqtgraph.examples.run()
     app = QApplication(sys.argv)
     form = clockForm()
     form.show()

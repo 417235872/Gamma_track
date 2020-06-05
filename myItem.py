@@ -2,6 +2,7 @@ import pyqtgraph as pg
 import numpy as np
 import pyqtgraph.opengl as pl
 from OpenGL.GL import *
+#让网格的一个轴显示刻度
 class myGLGridItem(pl.GLGridItem):
     def __init__(self,size=None, color=None, antialias=True, glOptions='translucent',parent : pl.GLViewWidget = None):
         super().__init__(size,color,antialias,glOptions)
@@ -33,3 +34,15 @@ class myGLGridItem(pl.GLGridItem):
         for x in xvals:
             self._parent.renderText(x,yvals[-1]+1,0,str(int(x)*10))
 
+from PyQt5.QtWidgets import QTreeWidgetItem
+import xml.etree.ElementTree as ET
+
+#存储了track分支信息的TreeItem
+class trackItem(QTreeWidgetItem):
+    def __init__(self,*__args):
+        super(trackItem, self).__init__(*__args)
+        self.trackElement = None
+
+    def setElement(self,element : ET.Element):
+        self.trackElement = element
+        self.setText(0,self.trackElement.find("./name").text)

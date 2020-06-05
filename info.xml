@@ -21,13 +21,15 @@
                     <name>track1-1-1</name>
                     <index>track1/track2/track1-1-1</index>
                     <note />
+                    <branch />
                 </track>
             </branch>
         </track>
         <track>
             <name>tack1-2</name>
             <index>track1/track1-2</index>
-            <note></note>
+            <note />
+            <branch />
         </track>
     </branch>
 </mainTrack>

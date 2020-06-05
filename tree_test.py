@@ -4,15 +4,30 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import xml.etree.ElementTree as ET
+from dataAnalisy import track
 
 class trackTree(QTreeWidget):
     def __init__(self):
         super(trackTree, self).__init__()
+        self.setColumnCount(1)
+        self.setHeaderLabel('track tree')
 
     def loadTrackInfo(self,path):
         self.clear()
-        self.trackXMl = ET.parse(path)
-        self.trackRoot = self.trackXMl.getroot()
+        self.RootTrack = ET.parse(path)
+        self._branchInit(self,self.RootTrack.getroot())
+
+    #递归遍历track树，设置节点
+    def _branchInit(self,Parent,track : ET.Element):
+        node = trackItem(Parent)
+        node.setElement(track)
+        branch = track.find('./branch').findall('track')
+        if branch is None:
+            return True
+        else:
+            for i in branch:
+                self._branchInit(node, i)
+            return True
 
 class trackItem(QTreeWidgetItem):
     def __init__(self,*__args):
@@ -20,16 +35,8 @@ class trackItem(QTreeWidgetItem):
         self.trackElement = None
 
     def setElement(self,element : ET.Element):
-        if element.tag == 'mainTrack':
-            self.trackElement = element
-        elif element.tag == 'track':
-            self.trackElement = element
-            self.setText(0,self.trackElement.find('name').text)
-
-
-
-
-
+        self.trackElement = element
+        self.setText(0,self.trackElement.find("./name").text)
 
 class TreeWidget(QMainWindow):
     myControls ={}
@@ -106,7 +113,9 @@ if __name__ == '__main__':
 
     app = QApplication(sys.argv)
     mainW = QMainWindow()
-    mainW.setCentralWidget(trackTree())
+    tree = trackTree()
+    tree.loadTrackInfo('info.xml')
+    mainW.setCentralWidget(tree)
     mainW.show()
     app.exec_()
 
