@@ -215,8 +215,8 @@ class track(QObject):
         with open("info_base.xml",'r') as file:
             infoText = file.read()
         baseTrack = ET.fromstring(infoText)
-        baseTrack.find("./name").text = kwargs.get("name","RootTrack")
-        baseTrack.find("./index").text = kwargs.get("name","RootTrack")
+        baseTrack.find("./name").text = name
+        baseTrack.find("./index").text = name
         baseTrack.find("./auxiliary/declination").text = str(kwargs.get("declination",0))
         baseTrack.find("./auxiliary/intensity").text = str(kwargs.get("intensity",0))
         baseTrack.find("./design/targetOrientation").text = str(kwargs.get("targetOrientation",0))
@@ -274,6 +274,38 @@ class track(QObject):
                 self.designDic.pop((index.text))
         trackParent.remove(track)
 
+    @staticmethod
+    def newRootTrack(path : str,name : str,**kwargs):
+        global dataHead
+        global designHead
+        #create new data and infomation of track
+        dataBase = pd.DataFrame(columns=dataHead).set_index(dataHead[0])
+        designBase = pd.DataFrame(columns=designHead).set_index(designHead[0])
+        with open("info_base.xml",'r') as file:
+            infoText = file.read()
+        baseTrack = ET.fromstring(infoText)
+        baseTrack.find("./name").text = name
+        baseTrack.find("./index").text = name
+        baseTrack.find("./auxiliary/declination").text = str(kwargs.get("declination",0))
+        baseTrack.find("./auxiliary/intensity").text = str(kwargs.get("intensity",0))
+        baseTrack.find("./design/targetOrientation").text = str(kwargs.get("targetOrientation",0))
+        baseTrack.find("./design/dipAngle").text = str(kwargs.get("dipAngle",0))
+        baseTrack.find("./design/orientation").text = str(kwargs.get("orientation",0))
+        #unpdate path and data source
+        path = os.path.join(path,name)
+        infoPath = os.path.join(path,'info.xml')
+        dataPath = os.path.join(path,"data.xlsx")
+        designPath = os.path.join(path,"design.xlsx")
+        tree = ET.ElementTree(element=baseTrack)
+        dataWriter = pd.ExcelWriter(dataPath)
+        designWriter = pd.ExcelWriter(designPath)
+        #save them
+        os.mkdir(path)
+        tree.write(infoPath)
+        dataBase.to_excel(excel_writer=dataWriter, sheet_name=kwargs.get("name","RootTrack"))
+        dataWriter.save()
+        designBase.to_excel(excel_writer=designWriter, sheet_name=kwargs.get("name","RootTrack"))
+        designWriter.save()
 
 if __name__ == '__main__':
     track = track()

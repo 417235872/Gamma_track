@@ -1,0 +1,15 @@
+<mainTrack>
+    <name>ert</name>
+    <index>ert</index>
+    <note />
+    <auxiliary>
+        <declination>0.0</declination>
+        <intensity>0.0</intensity>
+    </auxiliary>
+    <design>
+        <targetOrientation>0</targetOrientation>
+        <dipAngle>0</dipAngle>
+        <orientation>0</orientation>
+    </design>
+    <branch />
+</mainTrack>

@@ -7,7 +7,8 @@ from myItem import myGLGridItem
 class myGLWidget_withGride(pl.GLViewWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.addCoordinatePlane()
+        #self.addCoordinatePlane()
+        self.setBackgroundColor('w')
 
     def paintGL(self, region=None, viewport=None, useItemNames=False):
         super().paintGL(region,viewport,useItemNames)
@@ -19,7 +20,9 @@ class myGLWidget_withGride(pl.GLViewWidget):
         gx.rotate(90, 0, 1, 0)
         #gx.translate(-10, 0, 0)
         # gx.setSize(x.max(),y.max(),z.max())
+
         self.addItem(gx)
+        gx.setSize(10, 10, 10)
         gy = myGLGridItem(parent=self)
         gy.rotate(90, 1, 0, 0)
         gy.translate(0, -10, 0)
@@ -59,16 +62,6 @@ class myGLWidget_withGride(pl.GLViewWidget):
 
 #2D轨迹投影图
 import pyqtgraph as pg
-class myPlotWidget_y(pg.PlotWidget):
-    def __init__(self ,parent=None, background='w', **kargs):
-        super(myPlotWidget_y, self).__init__(parent, background, **kargs)
-        self.plotItem.showAxis('top')
-        self.plotItem.showAxis('right')
-        self.plotItem.getAxis('bottom').setStyle(showValues=False)
-        self.plotItem.getAxis('right').setStyle(showValues = False)
-        self.plotItem.showGrid(x=True,y=True)
-        self.plotItem.setTitle("")
-
 class myPlotWidget_x(pg.PlotWidget):
     def __init__(self,parent=None, background='w', **kargs):
         super(myPlotWidget_x, self).__init__(parent, background, **kargs)
@@ -78,6 +71,26 @@ class myPlotWidget_x(pg.PlotWidget):
         self.plotItem.getAxis('right').setStyle(showValues = False)
         self.plotItem.showGrid(x=True,y=True)
 
+class myPlotWidget_y(pg.PlotWidget):
+    def __init__(self ,parent=None, background='w', **kargs):
+        super(myPlotWidget_y, self).__init__(parent, background, **kargs)
+        self.plotItem.showAxis('top')
+        self.plotItem.showAxis('right')
+        self.plotItem.getAxis('bottom').setStyle(showValues=False)
+        self.plotItem.getAxis('left').setStyle(showValues = False)
+        self.plotItem.showGrid(x=True,y=True)
+        self.plotItem.setTitle("")
+
+
+class myPlotWidget_z(pg.PlotWidget):
+    def __init__(self,parent=None, background='w', **kargs):
+        super(myPlotWidget_z, self).__init__(parent, background, **kargs)
+        self.plotItem.showAxis('top')
+        self.plotItem.showAxis('right')
+        self.plotItem.getAxis('top').setStyle(showValues=False)
+        self.plotItem.getAxis('left').setStyle(showValues = False)
+        self.plotItem.showGrid(x=True,y=True)
+
 
 
 
@@ -85,7 +98,7 @@ class myPlotWidget_x(pg.PlotWidget):
 from PyQt5.QtWidgets import *
 import xml.etree.ElementTree as ET
 from myItem import trackItem
-
+#轨迹树控件
 class trackTree(QTreeWidget):
     def __init__(self,parent = None):
         super(trackTree, self).__init__(parent)
@@ -116,6 +129,33 @@ class trackTree(QTreeWidget):
 
 
 
+#实现文件树
+from PyQt5.QtWidgets import QTreeView,QFileSystemModel
+class NewTreeView(QTreeView):
+    def __init__(self,parent= None,workPath = ''):
+        super().__init__()
+        self.myModel = QFileSystemModel()
+        self.setTree(self.myModel)
+        self.setWorkPath(workPath)
+    #设置树控件大小等
+    def setTree(self,model):
+        self.setModel(self.myModel)
+        self.setColumnHidden(1, True)
+        self.setColumnHidden(2, True)
+        self.setColumnHidden(3, True)
+        self.header().hide()
+        self.setAnimated(False)
+        self.setIndentation(20)
+        self.setSortingEnabled(True)
+        self.setWindowTitle("Dir View")
+        self.resize(640, 480)
+    #设置工作目录
+    def setWorkPath(self,workPath):
+        self.myModel.setRootPath(workPath)
+        self.setRootIndex(self.myModel.index(workPath))
+
 if __name__ == '__main__':
-    pass
+    import pyqtgraph.examples
+    pyqtgraph.examples.run()
+
 

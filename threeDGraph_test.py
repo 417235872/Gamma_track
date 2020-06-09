@@ -52,7 +52,8 @@ for i in range(n):
     d = (x ** 2 + yi ** 2) ** 0.5
     z = 10 * np.cos(d) / (d + 1)
     pts = np.vstack([x, yi, z]).transpose()
-    print(i)
+    print("vstack",np.vstack([x, yi, z]))
+    print("transpose",pts)
     plt = gl.GLLinePlotItem(pos=pts, color=pg.glColor((i, n * 1.3)), width=(i + 1) / 10., antialias=True)
     w.addItem(plt)
 

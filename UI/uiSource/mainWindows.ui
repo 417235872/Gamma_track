@@ -45,7 +45,7 @@
           </property>
           <property name="maximumSize">
            <size>
-            <width>250</width>
+            <width>300</width>
             <height>16777215</height>
            </size>
           </property>
@@ -62,13 +62,26 @@
           <property name="maximumSize">
            <size>
             <width>16777215</width>
-            <height>200</height>
+            <height>300</height>
            </size>
           </property>
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QWidget" name="widget_pos" native="true"/>
+         <widget class="myPlotWidget_z" name="widget_z" native="true">
+          <property name="minimumSize">
+           <size>
+            <width>250</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>300</width>
+            <height>300</height>
+           </size>
+          </property>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -155,6 +168,18 @@
    <addaction name="action_tool_changeToolFace"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget_toolBox">
+   <property name="minimumSize">
+    <size>
+     <width>300</width>
+     <height>193</height>
+    </size>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>350</width>
+     <height>300</height>
+    </size>
+   </property>
    <attribute name="dockWidgetArea">
     <number>1</number>
    </attribute>
@@ -163,32 +188,330 @@
      <item>
       <widget class="QToolBox" name="toolBox">
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
-       <widget class="QWidget" name="page">
+       <widget class="QWidget" name="page_track">
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>0</y>
-          <width>256</width>
-          <height>216</height>
+          <y>-227</y>
+          <width>282</width>
+          <height>417</height>
          </rect>
         </property>
         <attribute name="label">
-         <string>Page 1</string>
+         <string>分支孔策略</string>
         </attribute>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_2">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_5">
+             <item>
+              <spacer name="verticalSpacer">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="text">
+                <string>当前选中的轨迹</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="Line" name="line">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_currentTrack">
+               <property name="text">
+                <string>未选中</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="checkBox_showDesignTrack">
+               <property name="text">
+                <string>显示设计轨迹</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="verticalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Vertical</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>20</width>
+                 <height>40</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="groupBox">
+             <property name="minimumSize">
+              <size>
+               <width>100</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>200</width>
+               <height>120</height>
+              </size>
+             </property>
+             <property name="title">
+              <string>显示策略</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <item>
+               <widget class="QRadioButton" name="radioButton_showOne">
+                <property name="text">
+                 <string>显示单条轨迹</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton_showAll">
+                <property name="text">
+                 <string>显示多条轨迹</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QRadioButton" name="radioButton_showMutliple">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="text">
+                 <string>显示所有分支</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_4">
+           <property name="title">
+            <string>参考线/网面</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_11">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_8">
+              <item>
+               <widget class="QCheckBox" name="checkBox_referenceX">
+                <property name="text">
+                 <string>水平参考</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider_referenceX">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceX"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QCheckBox" name="checkBox_referenceY">
+                <property name="text">
+                 <string>垂直参考</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider_referenceY">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceY"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_10">
+              <item>
+               <widget class="QCheckBox" name="checkBox_referenceZ">
+                <property name="text">
+                 <string>深度参考</string>
+                </property>
+                <property name="checked">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider_referenceZ">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceZ"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="groupBox_5">
+           <property name="title">
+            <string>网面自动刻度</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_13">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_4">
+              <item>
+               <widget class="QCheckBox" name="checkBox_2">
+                <property name="text">
+                 <string>不显示刻度</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_2">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <widget class="QCheckBox" name="checkBox_referenceX_3">
+                <property name="text">
+                 <string>水平刻度</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider_referenceX_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_4"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_15">
+              <item>
+               <widget class="QCheckBox" name="checkBox_referenceY_3">
+                <property name="text">
+                 <string>垂直参考</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider_referenceY_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_5"/>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_16">
+              <item>
+               <widget class="QCheckBox" name="checkBox_referenceZ_3">
+                <property name="text">
+                 <string>深度参考</string>
+                </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSlider" name="horizontalSlider_referenceZ_3">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="spinBox_6"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
-       <widget class="QWidget" name="page_2">
+       <widget class="QWidget" name="page_image">
         <property name="geometry">
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>256</width>
-          <height>216</height>
+          <width>278</width>
+          <height>190</height>
          </rect>
         </property>
         <attribute name="label">
-         <string>Page 2</string>
+         <string>图像显示策略</string>
         </attribute>
        </widget>
       </widget>
@@ -269,7 +592,7 @@
   <customwidget>
    <class>trackTree</class>
    <extends>QTreeWidget</extends>
-   <header>myWidget</header>
+   <header location="global">myWidget</header>
   </customwidget>
   <customwidget>
    <class>myGLWidget_withGride</class>
@@ -284,6 +607,12 @@
   </customwidget>
   <customwidget>
    <class>myPlotWidget_x</class>
+   <extends>QWidget</extends>
+   <header>myWidget</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>myPlotWidget_z</class>
    <extends>QWidget</extends>
    <header>myWidget</header>
    <container>1</container>

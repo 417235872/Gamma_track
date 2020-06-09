@@ -1,0 +1,15 @@
+<mainTrack>
+    <name>tr</name>
+    <index>tr</index>
+    <note />
+    <auxiliary>
+        <declination>0.0</declination>
+        <intensity>0.0&#956;</intensity>
+    </auxiliary>
+    <design>
+        <targetOrientation>0</targetOrientation>
+        <dipAngle>0</dipAngle>
+        <orientation>0</orientation>
+    </design>
+    <branch />
+</mainTrack>

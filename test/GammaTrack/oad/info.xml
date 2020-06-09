@@ -1,0 +1,15 @@
+<mainTrack>
+    <name>oad</name>
+    <index>oad</index>
+    <note />
+    <auxiliary>
+        <declination>-3.0</declination>
+        <intensity>0.0</intensity>
+    </auxiliary>
+    <design>
+        <targetOrientation>0</targetOrientation>
+        <dipAngle>0</dipAngle>
+        <orientation>0</orientation>
+    </design>
+    <branch />
+</mainTrack>
