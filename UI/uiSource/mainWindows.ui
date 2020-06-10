@@ -194,7 +194,7 @@
         <property name="geometry">
          <rect>
           <x>0</x>
-          <y>-227</y>
+          <y>-101</y>
           <width>282</width>
           <height>417</height>
          </rect>
@@ -333,13 +333,20 @@
               </item>
               <item>
                <widget class="QSlider" name="horizontalSlider_referenceX">
+                <property name="maximum">
+                 <number>10</number>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceX"/>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceX">
+                <property name="maximum">
+                 <double>10.000000000000000</double>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -357,13 +364,20 @@
               </item>
               <item>
                <widget class="QSlider" name="horizontalSlider_referenceY">
+                <property name="maximum">
+                 <number>10</number>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceY"/>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceY">
+                <property name="maximum">
+                 <double>10.000000000000000</double>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>
@@ -381,13 +395,20 @@
               </item>
               <item>
                <widget class="QSlider" name="horizontalSlider_referenceZ">
+                <property name="maximum">
+                 <number>10</number>
+                </property>
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceZ"/>
+               <widget class="QDoubleSpinBox" name="doubleSpinBox_referenceZ">
+                <property name="maximum">
+                 <double>10.000000000000000</double>
+                </property>
+               </widget>
               </item>
              </layout>
             </item>

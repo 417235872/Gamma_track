@@ -37,6 +37,13 @@ class myWindow(QMainWindow,Ui_MainWindow):
         self.action_menu_openProjiect.triggered.connect(self.openProject_event)
         self.action_menu_newProject.triggered.connect(self.newProject_event)
         self.action_tool_chooseMainTrack.triggered.connect(self.chooseMainTrack_event)
+        #设置滑动条和示数框关联
+        self.horizontalSlider_referenceX.valueChanged.connect(self.linkSliderToBox_X)
+        self.horizontalSlider_referenceY.valueChanged.connect(self.linkSliderToBox_Y)
+        self.horizontalSlider_referenceZ.valueChanged.connect(self.linkSliderToBox_Z)
+        self.doubleSpinBox_referenceX.valueChanged.connect(self.linkBoxToSlider_X)
+        self.doubleSpinBox_referenceY.valueChanged.connect(self.linkBoxToSlider_Y)
+        self.doubleSpinBox_referenceZ.valueChanged.connect(self.linkBoxToSlider_Z)
 
     #菜单事件：打开钻场
     def openProject_event(self):
@@ -60,6 +67,28 @@ class myWindow(QMainWindow,Ui_MainWindow):
         path,choosed = chooseRootTrackDialog().Dialog_show(projectPath=self.projectPath)
         if choosed:
             self.loadTrack(path)
+
+    #工具栏事件：滑块和示数框关联
+    def linkSliderToBox_X(self):
+        self.Grid_XoZ.translate(0, 0, self.horizontalSlider_referenceX.value() - self.doubleSpinBox_referenceX.value())
+        self.doubleSpinBox_referenceX.setValue(self.horizontalSlider_referenceX.value())
+    def linkBoxToSlider_X(self):
+        self.Grid_XoZ.translate(0, 0,  self.doubleSpinBox_referenceX.value() - self.horizontalSlider_referenceX.value())
+        self.horizontalSlider_referenceX.setValue(self.doubleSpinBox_referenceX.value())
+    def linkSliderToBox_Y(self):
+        self.Grid_XoY.translate(0, self.horizontalSlider_referenceY.value() - self.doubleSpinBox_referenceY.value(), 0)
+        self.doubleSpinBox_referenceY.setValue(self.horizontalSlider_referenceY.value())
+    def linkBoxToSlider_Y(self):
+        self.Grid_XoY.translate(0, self.doubleSpinBox_referenceY.value() - self.horizontalSlider_referenceY.value(), 0)
+        self.horizontalSlider_referenceY.setValue(self.doubleSpinBox_referenceY.value())
+    def linkSliderToBox_Z(self):
+        self.Grid_YoZ.translate( -(self.horizontalSlider_referenceZ.value() - self.doubleSpinBox_referenceZ.value()),0, 0)
+        self.doubleSpinBox_referenceZ.setValue(self.horizontalSlider_referenceZ.value())
+    def linkBoxToSlider_Z(self):
+        self.Grid_YoZ.translate( -(self.doubleSpinBox_referenceZ.value() - self.horizontalSlider_referenceZ.value()),0, 0)
+        self.horizontalSlider_referenceZ.setValue(self.doubleSpinBox_referenceZ.value())
+
+
 
     #初始化：连接各二维投影图像的相同轴
     def link2DplotAxis(self):
@@ -108,15 +137,14 @@ class myWindow(QMainWindow,Ui_MainWindow):
             self.ZplotDic[key] = pg.PlotDataItem(x=trackData.dataDic[key][dataHead[6]].values,
                                                  y=trackData.dataDic[key][dataHead[5]].values)
         self.printPlot()
-
+        self.autoGridSet()
 
     #辅助：清空画布上的元素
-
-
     def plotClear(self,goal = "ALL"):
         if goal == "ALL" or goal == "3D":
             for item in self.threeDwidget.items:
-                self.threeDwidget.removeItem(item)
+                if item not in [self.Grid_XoY,self.Grid_XoZ,self.Grid_YoZ]:
+                    self.threeDwidget.removeItem(item)
         if goal == "ALL" or goal == "2D":
             self.widget_x.plotItem.clear()
             self.widget_y.plotItem.clear()
@@ -130,7 +158,6 @@ class myWindow(QMainWindow,Ui_MainWindow):
             self.widget_x.plotItem.addItem(self.XplotDic[key])
             self.widget_y.plotItem.addItem(self.YplotDic[key])
             self.widget_z.plotItem.addItem(self.ZplotDic[key])
-
 
     #设置当前程序载入的主孔
     def setRootTrack(self,trackPath):
@@ -151,6 +178,63 @@ class myWindow(QMainWindow,Ui_MainWindow):
             yplot.setData(x=trackData.dataDic[key][dataHead[6]].values,y=trackData.dataDic[key][dataHead[4]].values)
             zplot = self.widget_z.plotItem.plot()
             zplot.setData(x=trackData.dataDic[key][dataHead[6]].values,y=trackData.dataDic[key][dataHead[5]].values)
+
+    #辅助：自动设置网面的长度和刻度
+    def autoGridSet(self):
+        global trackData
+        Xmaxlist = np.array([])
+        Ymaxlist = np.array([])
+        Zmaxlist = np.array([])
+        for frame in trackData.dataDic.values():
+            print("MAX:x-{0};y-{1};z-{2}".format(np.abs(frame[dataHead[4]].values).max(axis=0),
+                                                 np.abs(frame[dataHead[6]].values).max(axis=0),
+                                                 np.abs(frame[dataHead[5]].values).max(axis=0)))
+            Xmaxlist = np.append(Xmaxlist,np.abs(frame[dataHead[4]].values).max(axis=0))
+            Ymaxlist = np.append(Ymaxlist,np.abs(frame[dataHead[6]].values).max(axis=0))
+            Zmaxlist = np.append(Zmaxlist,np.abs(frame[dataHead[5]].values).max(axis=0))
+        print("MAX2:x-{0};y-{1};z-{2}".format(Xmaxlist,Ymaxlist.max(axis=0),Zmaxlist.max(axis=0)))
+        if Xmaxlist.max(axis=0) >= 7:
+            Xmax = Xmaxlist.max(axis=0) + 3
+        else:
+            Xmax = 10
+        if Ymaxlist.max(axis=0) >= 7:
+            Ymax = Ymaxlist.max(axis=0) + 3
+        else:
+            Ymax = 10
+        if Zmaxlist.max(axis=0) >= 7:
+            Zmax = Zmaxlist.max(axis=0) + 3
+        else:
+            Zmax = 10
+        print("SET:x-{0};y-{1};z-{2}".format(Xmax,Ymax,Zmax))
+        self.Grid_XoY.setSize(Xmax,Zmax,Ymax)
+        self.Grid_XoY.setSpacing(int(Xmax/10),int(Zmax/10),int(Ymax/10))
+        self.Grid_YoZ.setSize(Zmax,Ymax,Xmax)
+        self.Grid_YoZ.setSpacing(int(Zmax/10),int(Ymax/10),int(Xmax/10))
+        self.Grid_XoZ.setSize(Xmax,Ymax,Zmax)
+        self.Grid_XoZ.setSpacing(int(Xmax/10),int(Ymax/10),int(Zmax/10))
+
+    #辅助：设置调节各网面位置的范围
+    def setGridMoveRange(self,x = 10,y = 10,z = 10):
+        self.horizontalSlider_referenceX.setMaximum(int(y))
+        self.horizontalSlider_referenceX.setMinimum(int(-y))
+        self.doubleSpinBox_referenceX.setMaximum(int(y))
+        self.doubleSpinBox_referenceX.setMinimum(int(-y))
+
+        self.horizontalSlider_referenceY.setMaximum(int(z))
+        self.horizontalSlider_referenceY.setMinimum(int(z))
+        self.doubleSpinBox_referenceY.setMaximum(int(z))
+        self.doubleSpinBox_referenceY.setMaximum(int(-z))
+
+        self.horizontalSlider_referenceZ.setMaximum(int(x))
+        self.horizontalSlider_referenceZ.setMinimum(int(-x))
+        self.doubleSpinBox_referenceZ.setMaximum(int(x))
+        self.doubleSpinBox_referenceZ.setMaximum(int(-x))
+
+
+
+
+
+
 
 
 

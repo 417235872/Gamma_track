@@ -4,7 +4,7 @@ import pyqtgraph.opengl as pl
 from OpenGL.GL import *
 #让网格的一个轴显示刻度
 class myGLGridItem(pl.GLGridItem):
-    def __init__(self,size=None, color=None, antialias=True, glOptions='translucent',parent : pl.GLViewWidget = None):
+    def __init__(self,size=None, color=(255, 255, 255, 76.5), antialias=True, glOptions='translucent',parent : pl.GLViewWidget = None):
         super().__init__(size,color,antialias,glOptions)
         self._parent = parent
     def paint(self):
@@ -36,7 +36,7 @@ class myGLGridItem(pl.GLGridItem):
 
 
 class myGLGridItem_YoZ(pl.GLGridItem):
-    def __init__(self,size=None, color=None, antialias=True, glOptions='translucent',parent : pl.GLViewWidget = None):
+    def __init__(self,size=None, color=(255, 255, 255, 76.5), antialias=True, glOptions='translucent',parent : pl.GLViewWidget = None):
         super().__init__(size,color,antialias,glOptions)
         self._parent = parent
         self.rotate(90,0,1,0)
@@ -66,7 +66,7 @@ class myGLGridItem_YoZ(pl.GLGridItem):
             self._parent.renderText(x, yvals[-1] + 1, 0, str(-int(x)))
 
 class myGLGridItem_XoZ(pl.GLGridItem):
-    def __init__(self,size=None, color=None, antialias=True, glOptions='translucent',parent : pl.GLViewWidget = None):
+    def __init__(self,size=None, color=(255, 255, 255, 76.5), antialias=True, glOptions='translucent',parent : pl.GLViewWidget = None):
         super().__init__(size,color,antialias,glOptions)
         self._parent = parent
 
@@ -95,7 +95,7 @@ class myGLGridItem_XoZ(pl.GLGridItem):
             self._parent.renderText(xvals[0] - 1, y, 0, str(int(y)))
 
 class myGLGridItem_XoY(pl.GLGridItem):
-    def __init__(self, size=None, color=None, antialias=True, glOptions='translucent', parent: pl.GLViewWidget = None):
+    def __init__(self, size=None, color=(255, 255, 255, 76.5), antialias=True, glOptions='translucent', parent: pl.GLViewWidget = None):
         super().__init__(size, color, antialias, glOptions)
         self._parent = parent
         self.rotate(90,1,0,0)
