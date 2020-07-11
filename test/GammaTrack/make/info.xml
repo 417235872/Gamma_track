@@ -1,0 +1,15 @@
+<mainTrack>
+    <name>make</name>
+    <index>make</index>
+    <note />
+    <auxiliary>
+        <declination>3.0</declination>
+        <intensity>4.0</intensity>
+    </auxiliary>
+    <design>
+        <targetOrientation>3</targetOrientation>
+        <dipAngle>3</dipAngle>
+        <orientation>5</orientation>
+    </design>
+    <branch />
+</mainTrack>

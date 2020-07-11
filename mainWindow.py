@@ -6,6 +6,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from UI.mainWindows import Ui_MainWindow
+from myWidget import *
 from dataAnalisy import *
 from dilog import projectFileChooseDialog,chooseRootTrackDialog
 from myItem import *
@@ -28,10 +29,18 @@ class myWindow(QMainWindow,Ui_MainWindow):
         self.XplotDic = {}
         self.YplotDic = {}
         self.ZplotDic = {}
+        self.XDesignDic = {}
+        self.YDesignDic = {}
+        self.ZDesignDic = {}
         #链接2D投影图的坐标轴
         self.link2DplotAxis()
         #添加3D网格参考面
         self.addGrid3D()
+        #添加底部状态栏
+        self.myStatusbar = QStatusBar()
+        self.statusWidget = myStatusBarWidget()
+        self.setStatusBar(self.myStatusbar)
+        self.myStatusbar.addPermanentWidget(self.statusWidget)
 
     def setEvent(self):
         self.action_menu_openProjiect.triggered.connect(self.openProject_event)
@@ -113,11 +122,16 @@ class myWindow(QMainWindow,Ui_MainWindow):
         global trackData
         trackData.loadData(path)
         self.treeWidget.setTrackInfo(trackData.tree)
+        #清空当前数据和图像缓存
         self.plotClear()
         self.DataItemDic_3D.clear()
+        self.DesignItemDic_3D.clear()
         self.XplotDic.clear()
         self.YplotDic.clear()
         self.ZplotDic.clear()
+        self.XDesignDic.clear()
+        self.YDesignDic.clear()
+        self.ZDesignDic.clear()
         #根据数据生成图像元素
         for key in trackData.dataDic:
             # 这里要注意openGL内的坐标系为右手系，向左是X轴，向上是Y轴，垂直屏幕向外是Z轴。为匹配各方向投影的2D图像，
@@ -129,22 +143,54 @@ class myWindow(QMainWindow,Ui_MainWindow):
                                                          width = 2,antialias=True)
             #轨迹的正视图
             self.XplotDic[key] = pg.PlotDataItem(x=trackData.dataDic[key][dataHead[4]].values,
-                                                      y=trackData.dataDic[key][dataHead[5]].values)
+                                                      y=trackData.dataDic[key][dataHead[5]].values,pen = pg.mkPen("b",width=2))
             #轨迹的俯视图
             self.YplotDic[key] = pg.PlotDataItem(x=trackData.dataDic[key][dataHead[6]].values,
-                                                 y=trackData.dataDic[key][dataHead[4]].values)
+                                                 y=trackData.dataDic[key][dataHead[4]].values,pen = pg.mkPen("b",width=2))
             #轨迹的左视图
             self.ZplotDic[key] = pg.PlotDataItem(x=trackData.dataDic[key][dataHead[6]].values,
-                                                 y=trackData.dataDic[key][dataHead[5]].values)
+                                                 y=trackData.dataDic[key][dataHead[5]].values,pen = pg.mkPen("b",width=2))
+            #添加设计轨迹
+            #三维设计轨迹
+            designData = AngelToCoor(trackData.designDic[key])
+            dataCoordinate = np.vstack([-designData['X'],
+                                        designData['Z'],
+                                        designData['Y']]).transpose()
+            self.DesignItemDic_3D[key] = pl.GLLinePlotItem(pos=dataCoordinate,color = pg.glColor('r'),width = 2,antialias=True)
+            #设计轨迹的正视图
+            self.XDesignDic[key] = pg.PlotDataItem(x=designData['X'],y=designData['Y'],
+                                                   pen= pg.mkPen("r",width = 2))
+            # 设计轨迹的俯视图
+            self.YDesignDic[key] = pg.PlotDataItem(x=designData['Z'], y=designData['X'],
+                                                   pen=pg.mkPen("r", width=2))
+            #设计轨迹的左视图
+            self.ZDesignDic[key] = pg.PlotDataItem(x=designData['Z'],y=designData['Y'],
+                                                   pen= pg.mkPen("r",width = 2))
+        self.setTrackStatus()
         self.printPlot()
-        self.autoGridSet()
+        if trackData.dataDic[key].shape[0] != 0 :
+            self.autoGridSet()
+
+    #辅助：将孔信息加入状态栏
+    def setTrackStatus(self):
+        designDir = trackData.tree.find("./design/targetOrientation").text
+        dipAngle = trackData.tree.find("./design/dipAngle").text
+        dirAngle = trackData.tree.find("./design/orientation").text
+        magneticAngle = trackData.tree.find("./auxiliary/declination").text
+        magneticIntensity = trackData.tree.find("./auxiliary/intensity").text
+        self.statusWidget.setDevStatus(designDir=designDir,dipAngle=dipAngle,dirAngle=dirAngle,
+                                       magneticAngle=magneticAngle,magneticIntensity=magneticIntensity)
+
 
     #辅助：清空画布上的元素
     def plotClear(self,goal = "ALL"):
         if goal == "ALL" or goal == "3D":
+            delet = []
             for item in self.threeDwidget.items:
                 if item not in [self.Grid_XoY,self.Grid_XoZ,self.Grid_YoZ]:
-                    self.threeDwidget.removeItem(item)
+                    delet.append(item)
+            for item in delet:
+                self.threeDwidget.removeItem(item)
         if goal == "ALL" or goal == "2D":
             self.widget_x.plotItem.clear()
             self.widget_y.plotItem.clear()
@@ -154,10 +200,16 @@ class myWindow(QMainWindow,Ui_MainWindow):
     def printPlot(self):
         #if self.radioButton_showAll.isChecked():
         for key in self.DataItemDic_3D:
+            #绘制轨迹图像
             self.threeDwidget.addItem(self.DataItemDic_3D[key])
             self.widget_x.plotItem.addItem(self.XplotDic[key])
             self.widget_y.plotItem.addItem(self.YplotDic[key])
             self.widget_z.plotItem.addItem(self.ZplotDic[key])
+            #绘制设计轨迹图像
+            self.threeDwidget.addItem(self.DesignItemDic_3D[key])
+            self.widget_x.plotItem.addItem(self.XDesignDic[key])
+            self.widget_y.plotItem.addItem(self.YDesignDic[key])
+            self.widget_z.plotItem.addItem(self.ZDesignDic[key])
 
     #设置当前程序载入的主孔
     def setRootTrack(self,trackPath):
@@ -178,6 +230,8 @@ class myWindow(QMainWindow,Ui_MainWindow):
             yplot.setData(x=trackData.dataDic[key][dataHead[6]].values,y=trackData.dataDic[key][dataHead[4]].values)
             zplot = self.widget_z.plotItem.plot()
             zplot.setData(x=trackData.dataDic[key][dataHead[6]].values,y=trackData.dataDic[key][dataHead[5]].values)
+
+
 
     #辅助：自动设置网面的长度和刻度
     def autoGridSet(self):

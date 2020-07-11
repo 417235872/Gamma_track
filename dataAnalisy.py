@@ -302,10 +302,22 @@ class track(QObject):
         #save them
         os.mkdir(path)
         tree.write(infoPath)
-        dataBase.to_excel(excel_writer=dataWriter, sheet_name=kwargs.get("name","RootTrack"))
+        dataBase.to_excel(excel_writer=dataWriter, sheet_name=kwargs.get("name",name))
         dataWriter.save()
-        designBase.to_excel(excel_writer=designWriter, sheet_name=kwargs.get("name","RootTrack"))
+        designBase.to_excel(excel_writer=designWriter, sheet_name=kwargs.get("name",name))
         designWriter.save()
+
+#将设计文件从孔深角度信息转换成坐标信息
+def AngelToCoor(design : pd.DataFrame):
+    if design.shape[0] == 0:
+        return pd.DataFrame({"X": [], "Y": [], "Z": [], "depth": design.index.values}).set_index("depth")
+    depth_ = design.index.values[0]
+    diff = np.append(depth_,design.index.values[1:] - design.index.values[:-1])
+    tempLen = diff * np.cos(design[designHead[1]]/180 * np.pi)
+    x = np.cumsum(tempLen * np.cos(design[designHead[2]]/180 * np.pi))
+    y = np.cumsum(tempLen * np.sin(design[designHead[2]]/180 * np.pi))
+    z = np.cumsum(diff * np.sin(design[designHead[1]]/180 * np.pi))
+    return pd.DataFrame({"X": x, "Y": y, "Z": z, "depth": design.index.values}).set_index("depth")
 
 if __name__ == '__main__':
     track = track()

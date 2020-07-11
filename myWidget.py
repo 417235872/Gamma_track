@@ -70,6 +70,9 @@ class myPlotWidget_x(pg.PlotWidget):
         self.plotItem.getAxis('top').setStyle(showValues=False)
         self.plotItem.getAxis('right').setStyle(showValues = False)
         self.plotItem.showGrid(x=True,y=True)
+        self.plotItem.setLabel(axis='left',text='上下位移')
+        self.plotItem.setLabel(axis='bottom', text='水平位移')
+
 
 class myPlotWidget_y(pg.PlotWidget):
     def __init__(self ,parent=None, background='w', **kargs):
@@ -79,7 +82,9 @@ class myPlotWidget_y(pg.PlotWidget):
         self.plotItem.getAxis('bottom').setStyle(showValues=False)
         self.plotItem.getAxis('left').setStyle(showValues = False)
         self.plotItem.showGrid(x=True,y=True)
-        self.plotItem.setTitle("")
+        # self.plotItem.setTitle("")
+        self.plotItem.setLabel(axis='right', text='水平位移')
+        self.plotItem.setLabel(axis='top', text='左右位移')
 
 
 class myPlotWidget_z(pg.PlotWidget):
@@ -90,7 +95,8 @@ class myPlotWidget_z(pg.PlotWidget):
         self.plotItem.getAxis('top').setStyle(showValues=False)
         self.plotItem.getAxis('left').setStyle(showValues = False)
         self.plotItem.showGrid(x=True,y=True)
-
+        self.plotItem.setLabel(axis='right', text='上下位移')
+        self.plotItem.setLabel(axis='bottom', text='左右位移')
 
 
 
@@ -153,6 +159,31 @@ class NewTreeView(QTreeView):
     def setWorkPath(self,workPath):
         self.myModel.setRootPath(workPath)
         self.setRootIndex(self.myModel.index(workPath))
+
+#底部状态栏
+from PyQt5.QtWidgets import QWidget
+from UI.statusBarWidget import Ui_Form
+class myStatusBarWidget(QWidget,Ui_Form):
+    def __init__(self):
+        super(myStatusBarWidget, self).__init__()
+        self.setupUi(self)
+        self.retranslateUi(self)
+
+    def clearData(self):
+        self.label_designDir.setText('')
+        self.label_dipAngle.setText('')
+        self.label_dirAngle.setText('')
+        self.label_magneticAngle.setText('')
+        self.label_magneticIntensity.setText('')
+
+    def setDevStatus(self,designDir ,dipAngle,dirAngle,
+                     magneticAngle,magneticIntensity):
+        self.label_designDir.setText(designDir+'°')
+        self.label_dipAngle.setText(dipAngle+'°')
+        self.label_dirAngle.setText(dirAngle+'°')
+        self.label_magneticAngle.setText(magneticAngle+'°')
+        self.label_magneticIntensity.setText(magneticIntensity+'μT')
+
 
 if __name__ == '__main__':
     import pyqtgraph.examples
