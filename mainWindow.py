@@ -7,6 +7,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 from UI.mainWindows import Ui_MainWindow
 from myWidget import *
+from myDialog import *
 from dataAnalisy import *
 from dilog import projectFileChooseDialog,chooseRootTrackDialog
 from myItem import *
@@ -22,10 +23,13 @@ class myWindow(QMainWindow,Ui_MainWindow):
         self.setEvent()
 
     def setMore(self):
+        #钻场文件路径
         self.projectPath = None
         #各图像元素的存储
         self.DataItemDic_3D = {}
+        self.DataItemDic_point_3D = {}
         self.DesignItemDic_3D = {}
+        self.DesignItemDic_point_3D = {}
         self.XplotDic = {}
         self.YplotDic = {}
         self.ZplotDic = {}
@@ -53,6 +57,8 @@ class myWindow(QMainWindow,Ui_MainWindow):
         self.doubleSpinBox_referenceX.valueChanged.connect(self.linkBoxToSlider_X)
         self.doubleSpinBox_referenceY.valueChanged.connect(self.linkBoxToSlider_Y)
         self.doubleSpinBox_referenceZ.valueChanged.connect(self.linkBoxToSlider_Z)
+        #工具栏事件
+        self.action_designTrack.triggered.connect(self.setDesignTrack_event)
 
     #菜单事件：打开钻场
     def openProject_event(self):
@@ -76,6 +82,20 @@ class myWindow(QMainWindow,Ui_MainWindow):
         path,choosed = chooseRootTrackDialog().Dialog_show(projectPath=self.projectPath)
         if choosed:
             self.loadTrack(path)
+
+    #工具栏事件：设计轨迹
+    def setDesignTrack_event(self):
+        global trackData
+        items = list(trackData.designDic.items())
+        keys = [k for k,v in items]
+        if len(items) != 0:
+            redata = designTrackTableDialog.openDailog(trackData.designDic[keys[0]])
+            if redata[0]:
+                trackData.designDic[keys[0]] = redata[1]
+            trackData.saveall()
+            self.trackUpdata()
+
+
 
     #工具栏事件：滑块和示数框关联
     def linkSliderToBox_X(self):
@@ -117,15 +137,20 @@ class myWindow(QMainWindow,Ui_MainWindow):
         self.Grid_XoY.setSize(10,10,10)
         self.threeDwidget.addItem(self.Grid_XoY)
 
-    #载入测斜轨迹数据，并创建图像元素到相应Dic中（主孔加分支孔）{暂时没有添加设计文件}
+    #载入测斜轨迹数据，并创建图像元素到相应Dic中（主孔加分支孔）
     def loadTrack(self,path):
         global trackData
         trackData.loadData(path)
+        self.trackUpdata()
+    #创建图像元素到相应Dic中（主孔加分支孔）
+    def trackUpdata(self):
         self.treeWidget.setTrackInfo(trackData.tree)
         #清空当前数据和图像缓存
         self.plotClear()
         self.DataItemDic_3D.clear()
+        self.DataItemDic_point_3D.clear()
         self.DesignItemDic_3D.clear()
+        self.DesignItemDic_point_3D.clear()
         self.XplotDic.clear()
         self.YplotDic.clear()
         self.ZplotDic.clear()
@@ -141,6 +166,8 @@ class myWindow(QMainWindow,Ui_MainWindow):
                                         trackData.dataDic[key][dataHead[5]]]).transpose()
             self.DataItemDic_3D[key] = pl.GLLinePlotItem(pos=dataCoordinate,color =pg.glColor('b'),
                                                          width = 2,antialias=True)
+            self.DataItemDic_point_3D[key] = pl.GLScatterPlotItem(pos=dataCoordinate,color = pg.glColor('g'))
+            print(pg.glColor('015C65FF'))
             #轨迹的正视图
             self.XplotDic[key] = pg.PlotDataItem(x=trackData.dataDic[key][dataHead[4]].values,
                                                       y=trackData.dataDic[key][dataHead[5]].values,pen = pg.mkPen("b",width=2))
@@ -157,6 +184,7 @@ class myWindow(QMainWindow,Ui_MainWindow):
                                         designData['Z'],
                                         designData['Y']]).transpose()
             self.DesignItemDic_3D[key] = pl.GLLinePlotItem(pos=dataCoordinate,color = pg.glColor('r'),width = 2,antialias=True)
+            self.DesignItemDic_point_3D[key] = pl.GLScatterPlotItem(pos=dataCoordinate,color = pg.glColor('y'))
             #设计轨迹的正视图
             self.XDesignDic[key] = pg.PlotDataItem(x=designData['X'],y=designData['Y'],
                                                    pen= pg.mkPen("r",width = 2))
@@ -168,6 +196,7 @@ class myWindow(QMainWindow,Ui_MainWindow):
                                                    pen= pg.mkPen("r",width = 2))
         self.setTrackStatus()
         self.printPlot()
+        self.updataTabelData()
         if trackData.dataDic[key].shape[0] != 0 :
             self.autoGridSet()
 
@@ -180,6 +209,14 @@ class myWindow(QMainWindow,Ui_MainWindow):
         magneticIntensity = trackData.tree.find("./auxiliary/intensity").text
         self.statusWidget.setDevStatus(designDir=designDir,dipAngle=dipAngle,dirAngle=dirAngle,
                                        magneticAngle=magneticAngle,magneticIntensity=magneticIntensity)
+
+    #辅助：添加表格
+    def updataTabelData(self):
+        global trackData
+        items=trackData.dataDic.items()
+        keys = [k for k,v in items]
+        model = pandasModel(trackData.dataDic[keys[0]])
+        self.tableView.setModel(model)
 
 
     #辅助：清空画布上的元素
@@ -202,11 +239,13 @@ class myWindow(QMainWindow,Ui_MainWindow):
         for key in self.DataItemDic_3D:
             #绘制轨迹图像
             self.threeDwidget.addItem(self.DataItemDic_3D[key])
+            self.threeDwidget.addItem(self.DataItemDic_point_3D[key])
             self.widget_x.plotItem.addItem(self.XplotDic[key])
             self.widget_y.plotItem.addItem(self.YplotDic[key])
             self.widget_z.plotItem.addItem(self.ZplotDic[key])
             #绘制设计轨迹图像
             self.threeDwidget.addItem(self.DesignItemDic_3D[key])
+            self.threeDwidget.addItem(self.DesignItemDic_point_3D[key])
             self.widget_x.plotItem.addItem(self.XDesignDic[key])
             self.widget_y.plotItem.addItem(self.YDesignDic[key])
             self.widget_z.plotItem.addItem(self.ZDesignDic[key])

@@ -136,3 +136,32 @@ class trackItem(QTreeWidgetItem):
     def setElement(self,element : ET.Element):
         self.trackElement = element
         self.setText(0,self.trackElement.find("./name").text)
+
+#专门读取DataFrame的表格数据格式
+import pandas as pd
+from PyQt5.QtCore import QAbstractTableModel, Qt
+class pandasModel(QAbstractTableModel):
+
+    def __init__(self, data : pd.DataFrame):
+        QAbstractTableModel.__init__(self)
+        self._data = data.reset_index()
+
+    def rowCount(self, parent=None):
+        return self._data.shape[0]
+
+    def columnCount(self, parnet=None):
+        return self._data.shape[1]
+
+    def data(self, index, role=Qt.DisplayRole):
+        if index.isValid():
+            if role == Qt.DisplayRole:
+                return str(self._data.iloc[index.row(), index.column()])
+        return None
+
+    def headerData(self, col, orientation, role):
+        if orientation == Qt.Horizontal and role == Qt.DisplayRole:
+            return self._data.columns[col]
+        return None
+
+    def reLoadData(self,data:pd.DataFrame):
+        self._data = data
